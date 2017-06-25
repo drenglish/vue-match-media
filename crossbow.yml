@@ -1,0 +1,12 @@
+watch:
+  default:
+    before: flow
+    watchers:
+      - patterns: './src/*.js'
+        tasks: flow
+    options:
+      ignored: '**/*.test.js'
+
+tasks:
+  flow:
+    - '@npm flow || true'
