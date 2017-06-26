@@ -1,20 +1,27 @@
 import Vue from 'vue'
 import plugin, {mq} from './index.js'
 import 'jasmine-expect'
+import matchMediaMock from 'match-media-mock'
 
 global.window = {}
-global.window.matchMedia = jest.fn(query => ({
-  matches: false,
-  media: query
-}))
+global.window.matchMedia = matchMediaMock.create()
+global.window.resizeTo = (x, y) => {
+  global.window.matchMedia.setConfig({
+    type: 'screen',
+    width: x
+  })
+}
 
 beforeAll(() => {
   Vue.use(plugin)
 })
+beforeEach(() => {
+  global.window.resizeTo(1400, 0)
+})
 
 const rootOpts = {
-  tablet: 'tablet',
-  desktop: 'desktop'
+  tablet: '(max-width: 1024px)',
+  desktop: '(min-width: 1024px)'
 }
 
 describe('The plugin', () => {
@@ -28,6 +35,21 @@ describe('The plugin', () => {
     })
     expect(vm.$mq).toHaveProperty('tablet')
     expect(vm.$mq).toHaveProperty('desktop')
+  })
+  it('provides an "all" property on the $mq object', () => {
+    global.window.resizeTo(700, 0)
+    const vm = new Vue({
+      mq: {
+        phone: '(max-width: 768px)',
+        tablet: '(max-width: 1024px)'
+      },
+      render (h) {
+        return h()
+      }
+    })
+    vm.$mount()
+    expect(vm.$mq).toHaveProperty('all')
+    expect(vm.$mq.all.join(' ')).toEqual('phone tablet')
   })
   it('implicitly provides media query options to child components', () => {
     const child = Vue.component('child', Vue.extend({
@@ -49,16 +71,16 @@ describe('The plugin', () => {
     vm.$mount()
     const vmchild = vm.$children[0]
     expect(vmchild).toHaveProperty('name', 'child')
-    expect(vmchild.$mq).toHaveProperty('tablet')
-    expect(vmchild.$mq).toHaveProperty('desktop')
+    expect(vmchild.$mq).toHaveProperty('tablet', false)
+    expect(vmchild.$mq).toHaveProperty('desktop', true)
   })
   it('merges query options provided by child components', () => {
     const child = Vue.component('child', Vue.extend({
       data () { return {name: 'child'} },
       render (h) { return h() },
       mq: {
-        phone: 'phone',
-        tablet: 'phone'
+        phone: '(max-width: 700px)',
+        tablet: '(max-width: 700px)'
       }
     }))
     const vm = new Vue({
@@ -75,19 +97,19 @@ describe('The plugin', () => {
     })
     vm.$mount()
     const vmchild = vm.$children[0]
-    expect(vmchild.$mq).toHaveProperty('phone')
-    expect(vmchild.$mq).toHaveProperty('tablet')
-    expect(vmchild.$mq).toHaveProperty('desktop')
+    expect(vmchild.$mq).toHaveProperty('phone', false)
+    expect(vmchild.$mq).toHaveProperty('tablet', false)
+    expect(vmchild.$mq).toHaveProperty('desktop', true)
 
-    expect(vmchild[mq]._tablet).toBe('phone')
+    expect(vmchild[mq]._tablet).toEqual(vmchild[mq]._phone)
   })
   it('allows a child component to declare an isolated scope', () => {
     const child = Vue.component('child', Vue.extend({
       data () { return {name: 'child'} },
       render (h) { return h() },
       mq: {
-        phone: 'phone',
-        tablet: 'phone',
+        phone: '(max-width: 700px)',
+        tablet: '(min-width: 700px)',
         config: {
           isolated: true
         }

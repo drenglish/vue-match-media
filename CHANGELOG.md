@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 0.2.0 - 2017-06-26
+### Added
+- Proper matchMedia mock for unit testing
+- Convenience property "all" on $mq object returns array of all matched query keys
+
 ## 0.1.0 - 2017-06-25
 ### Added
-- Define an "$mq" property on the Vue prototype
-- Configure the $mq object on components via global mixin
-- Allow a component option to declare an isolated $mq scope
+- An "$mq" property on the Vue prototype
+- Component configuration of the $mq object via global mixin
+- Component option to declare an isolated $mq scope

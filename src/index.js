@@ -6,7 +6,7 @@ export const mq = Symbol('mq')
 export default (Vue: Vue, options?: Object): void => {
   Object.defineProperty(Vue.prototype, '$mq', ({
     get () {
-      return this[mq]
+      return this[mq].obs
     }
   }: Object))
 
@@ -15,7 +15,8 @@ export default (Vue: Vue, options?: Object): void => {
       const isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated
       const isRoot = this === this.$root
 
-      this[mq] = isIsolated || isRoot || !this.$parent ? {} : this.$parent[mq]
+      this[mq] = {}
+      this[mq].obs = isIsolated || isRoot || !this.$parent ? {} : this.$parent.$mq
 
       if (this.$options.mq) {
         const observables = Object.keys(this.$options.mq)
@@ -24,23 +25,31 @@ export default (Vue: Vue, options?: Object): void => {
             const mql = window.matchMedia(this.$options.mq[k])
             Object.defineProperty(obs, k, ({
               enumerable: true,
+              configurable: true,
               get () {
                 return mql.matches
               }
             }: Object))
             /* Below for testing and debugging */
             if (process.env.NODE_ENV !== 'production') {
-              obs[`_${k}`] = mql.media
+              this[mq][`_${k}`] = mql.media
             }
             return obs
           }, {})
 
         if (!isIsolated) {
-          this[mq] = {
-            ...this[mq],
+          this[mq].obs = {
+            ...this[mq].obs,
             ...observables
           }
         }
+
+        Object.defineProperty(this[mq].obs, 'all', ({
+          get () {
+            return Object.keys(this)
+              .filter(k => this[k])
+          }
+        }: Object))
       }
     }
   })
