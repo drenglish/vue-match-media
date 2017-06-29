@@ -245,3 +245,122 @@ describe('In the browser context', () => {
     expect(classList.contains('tablet')).toBe(true)
   })
 })
+
+describe('The onmedia directive', () => {
+  beforeEach(() => {
+    document.body.appendChild(document.createElement('main'))
+  })
+  afterEach(() => {
+    document.body.removeChild(document.querySelector('#test'))
+  })
+  let testError = ''
+  console.error = msg => { testError = msg }
+  it('warns on invalid binding expression', async () => {
+    const vm = new Vue({
+      mq: rootOpts,
+      template: '<div id="test" v-onmedia="tablet++"></div>',
+      data: {
+        tablet: 0,
+        desktop: 0
+      }
+    })
+    vm.$mount('main')
+    expect(testError).toEqual(expect.stringContaining('Error binding v-onmedia'))
+  })
+  it('executes for any matched mq watchers', async () => {
+    const vm = new Vue({
+      mq: rootOpts,
+      template: '<div id="test" v-onmedia.any="test"></div>',
+      data: {
+        tablet: 0,
+        desktop: 0
+      },
+      methods: {
+        test (alias, matched) {
+          if (matched) this[alias]++
+        }
+      }
+    })
+    vm.$mount('main')
+    expect(vm).toHaveProperty('desktop', 1) // Hit on init
+    expect(vm).toHaveProperty('tablet', 0)
+    window.resizeTo(1000, 0)
+    await vm.$nextTick()
+    expect(vm).toHaveProperty('desktop', 1)
+    expect(vm).toHaveProperty('tablet', 1) // Hit on resize
+  })
+  it('defaults to .any if no modifiers', async () => {
+    const vm = new Vue({
+      mq: rootOpts,
+      template: '<div id="test" v-onmedia="test"></div>',
+      data: {
+        tablet: 0,
+        desktop: 0
+      },
+      methods: {
+        test (alias, matched) {
+          if (matched) this[alias]++
+        }
+      }
+    })
+    vm.$mount('main')
+    expect(vm).toHaveProperty('desktop', 1) // Hit on init
+    expect(vm).toHaveProperty('tablet', 0)
+    window.resizeTo(1000, 0)
+    await vm.$nextTick()
+    expect(vm).toHaveProperty('desktop', 1)
+    expect(vm).toHaveProperty('tablet', 1) // Hit on resize
+  })
+  it('matches only the query alias specified in a modifier', async () => {
+    const vm = new Vue({
+      mq: rootOpts,
+      template: '<div id="test" v-onmedia.tablet="test"></div>',
+      data: {
+        tablet: 0,
+        desktop: 0
+      },
+      methods: {
+        test (alias, matched) {
+          if (matched) this[alias]++
+        }
+      }
+    })
+    vm.$mount('main')
+    expect(vm).toHaveProperty('desktop', 0) // Not specified, so not hit on init
+    expect(vm).toHaveProperty('tablet', 0)
+    window.resizeTo(1000, 0)
+    await vm.$nextTick()
+    expect(vm).toHaveProperty('desktop', 0)
+    expect(vm).toHaveProperty('tablet', 1) // Hit on resize
+  })
+  it('allows multiple alias modifiers', async () => {
+    const vm = new Vue({
+      mq: {...rootOpts, phone: '(max-width: 728px)'},
+      template: '<div id="test" v-onmedia.tablet.phone="test"></div>',
+      data: {
+        phone: 0,
+        tablet: 0,
+        desktop: 0
+      },
+      methods: {
+        test (alias, matched) {
+          if (matched) this[alias]++
+        }
+      }
+    })
+    vm.$mount('main')
+    expect(vm).toHaveProperty('desktop', 0)
+    expect(vm).toHaveProperty('tablet', 0)
+    expect(vm).toHaveProperty('phone', 0)
+    window.resizeTo(1000, 0)
+    await vm.$nextTick()
+    expect(vm).toHaveProperty('desktop', 0)
+    expect(vm).toHaveProperty('tablet', 1)
+    expect(vm).toHaveProperty('phone', 0)
+    window.resizeTo(700, 0)
+    await vm.$nextTick()
+    expect(vm).toHaveProperty('desktop', 0)
+    expect(vm).toHaveProperty('tablet', 1)
+    expect(vm).toHaveProperty('phone', 1)
+  })
+})

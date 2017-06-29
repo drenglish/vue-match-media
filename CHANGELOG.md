@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 0.4.0 - 2017-06-29
+### Added
+- An "onmedia" directive to allow component methods to be executed on change
+
 ## 0.3.0 - 2017-06-27
 ### Added
 - Reactive properties enabled on $mq object

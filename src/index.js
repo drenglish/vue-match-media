@@ -2,17 +2,17 @@
 import Vue from 'vue'
 
 export const MQ = Symbol('mq')
-export const MQMAP = Symbol('mqueries')
+const MQMAP = Symbol('mqueries')
 
 export default (Vue: Vue, options?: Object): void => {
   Object.defineProperty(Vue.prototype, '$mq', ({
-    get () {
+    get (): Object {
       return this[MQ]
     }
   }: Object))
 
   Vue.mixin({
-    beforeCreate () {
+    beforeCreate (): void {
       const isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated
       const isRoot = this === this.$root
       const inherited = this.$parent && this.$parent[MQMAP]
@@ -52,6 +52,27 @@ export default (Vue: Vue, options?: Object): void => {
         this[MQMAP] = inherited
         Vue.util.defineReactive(this, MQ, this.$parent[MQ])
       }
+    }
+  })
+
+  Vue.directive('onmedia', {
+    bind (el?: Node, {value, expression, modifiers}, {context}): void {
+      const matchers = [...Object.keys(modifiers)]
+      if (!(value instanceof Function)) {
+        Vue.util.warn(`Error binding v-onmedia: expression "${expression}" doesn't resolve to
+          a component method, so there's nothing to call back on change`, context)
+        return
+      }
+
+      Object.keys(context[MQMAP])
+        .filter(k =>
+          (modifiers.any || !matchers.length) || matchers.find(m => m === k)
+        )
+        .forEach(k => {
+          context.$watch(`$mq.${k}`, (newVal, oldVal) => {
+            value.call(context, k, newVal)
+          }, {immediate: true})
+        })
     }
   })
 }
