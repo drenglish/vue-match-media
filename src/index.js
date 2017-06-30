@@ -56,7 +56,7 @@ export default (Vue: Vue, options?: Object): void => {
   })
 
   Vue.directive('onmedia', {
-    bind (el?: Node, {value, expression, arg, modifiers}, {context}): void {
+    inserted (el?: Node, {value, expression, arg, modifiers}, {context}): void {
       const matchers = [...Object.keys(modifiers)]
       const ANY = !matchers.length || modifiers.any
       const NOT = arg
