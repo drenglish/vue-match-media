@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 0.5.0 - 2017-06-30
+### Added
+- Let "onmedia" directive accept a "not" argument
+
 ## 0.4.0 - 2017-06-29
 ### Added
 - An "onmedia" directive to allow component methods to be executed on change

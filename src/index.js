@@ -56,17 +56,30 @@ export default (Vue: Vue, options?: Object): void => {
   })
 
   Vue.directive('onmedia', {
-    bind (el?: Node, {value, expression, modifiers}, {context}): void {
+    bind (el?: Node, {value, expression, arg, modifiers}, {context}): void {
       const matchers = [...Object.keys(modifiers)]
+      const ANY = !matchers.length || modifiers.any
+      const NOT = arg
+
       if (!(value instanceof Function)) {
         Vue.util.warn(`Error binding v-onmedia: expression "${expression}" doesn't resolve to
           a component method, so there's nothing to call back on change`, context)
         return
       }
+      if (NOT) {
+        if (ANY) {
+          Vue.util.warn(`Error binding v-onmedia: a ":not" argument was passed without any modifiers`, context)
+          return
+        }
+        if (NOT !== 'not') {
+          Vue.util.warn(`Error binding v-onmedia: unknown argument "${arg}" was passed`, context)
+          return
+        }
+      }
 
       Object.keys(context[MQMAP])
         .filter(k =>
-          (modifiers.any || !matchers.length) || matchers.find(m => m === k)
+          ANY || matchers.find(m => NOT ? m !== k : m === k)
         )
         .forEach(k => {
           context.$watch(`$mq.${k}`, (newVal, oldVal) => {

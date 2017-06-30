@@ -253,9 +253,10 @@ describe('The onmedia directive', () => {
   afterEach(() => {
     document.body.removeChild(document.querySelector('#test'))
   })
-  let testError = ''
-  console.error = msg => { testError = msg }
   it('warns on invalid binding expression', async () => {
+    let testError = ''
+    console.error = msg => { testError = msg }
+
     const vm = new Vue({
       mq: rootOpts,
       template: '<div id="test" v-onmedia="tablet++"></div>',
@@ -362,5 +363,40 @@ describe('The onmedia directive', () => {
     expect(vm).toHaveProperty('desktop', 0)
     expect(vm).toHaveProperty('tablet', 1)
     expect(vm).toHaveProperty('phone', 1)
+  })
+  it('accepts a :not argument', async () => {
+    const vm = new Vue({
+      mq: {
+        tablet: '(min-width: 768px)',
+        desktop: '(min-width: 1024px)'
+      },
+      template: '<div id="test" v-onmedia:not.tablet="test"></div>',
+      data: {
+        tablet: 0,
+        desktop: 0
+      },
+      methods: {
+        test (alias, matched) {
+          if (matched) this[alias]++
+        }
+      }
+    })
+    vm.$mount('main')
+    expect(vm).toHaveProperty('desktop', 1) // Hit on init
+    expect(vm).toHaveProperty('tablet', 0) // Tablet hit ignored
+  })
+  it('warns on invalid :not argument', async () => {
+    let testError = ''
+    console.error = msg => { testError = msg }
+
+    const vm = new Vue({
+      mq: rootOpts,
+      template: '<div id="test" v-onmedia:not="test"></div>',
+      methods: {
+        test () {}
+      }
+    })
+    vm.$mount('main')
+    expect(testError).toEqual(expect.stringContaining(`without any modifiers`))
   })
 })
