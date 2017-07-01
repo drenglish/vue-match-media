@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## 0.9.0 - 2017-06-30
+## 0.7.0 - 2017-07-01
+### Added
+- Build distributable (strip Flow annotations)
+
+## 0.6.0 - 2017-06-30
 ### Added
 - README documentation of current feature set
-- Version bump bc we seem basically feature-complete at this point
 ### Changed
 - Directive seems slightly more useful set up from inserted() hook
 - package.json cleanup

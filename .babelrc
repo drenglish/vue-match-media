@@ -3,7 +3,7 @@
     "flow",
     ["env", {
       "targets": {
-        "browser": true
+        "node": true
       }
     }]
   ],
