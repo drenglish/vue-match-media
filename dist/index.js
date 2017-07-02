@@ -51,7 +51,7 @@ export default ((Vue, options) => {
   });
 
   Vue.directive('onmedia', {
-    inserted(el, { value, expression, arg, modifiers }, { context }) {
+    bind(el, { value, expression, arg, modifiers }, { context }) {
       const matchers = [...Object.keys(modifiers)];
       const ANY = !matchers.length || modifiers.any;
       const NOT = arg;
@@ -75,7 +75,10 @@ export default ((Vue, options) => {
       Object.keys(context[MQMAP]).filter(k => ANY || matchers.find(m => NOT ? m !== k : m === k)).forEach(k => {
         context.$watch(`$mq.${k}`, (newVal, oldVal) => {
           value.call(context, k, newVal);
-        }, { immediate: true });
+        });
+        if (context[MQ][k]) {
+          value.call(context, k, true, true);
+        }
       });
     }
   });

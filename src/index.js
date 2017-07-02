@@ -56,7 +56,7 @@ export default (Vue: Vue, options?: Object): void => {
   })
 
   Vue.directive('onmedia', {
-    inserted (el?: Node, {value, expression, arg, modifiers}, {context}): void {
+    bind (el?: Node, {value, expression, arg, modifiers}, {context}): void {
       const matchers = [...Object.keys(modifiers)]
       const ANY = !matchers.length || modifiers.any
       const NOT = arg
@@ -84,7 +84,10 @@ export default (Vue: Vue, options?: Object): void => {
         .forEach(k => {
           context.$watch(`$mq.${k}`, (newVal, oldVal) => {
             value.call(context, k, newVal)
-          }, {immediate: true})
+          })
+          if (context[MQ][k]) {
+            value.call(context, k, true, true)
+          }
         })
     }
   })

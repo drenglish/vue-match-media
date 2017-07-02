@@ -290,6 +290,24 @@ describe('The onmedia directive', () => {
     expect(vm).toHaveProperty('desktop', 1)
     expect(vm).toHaveProperty('tablet', 1) // Hit on resize
   })
+  it('sends an init signal when executed on setup', async () => {
+    const vm = new Vue({
+      mq: rootOpts,
+      template: '<div id="test" v-onmedia.any="test"></div>',
+      data: {
+        desktop: 0
+      },
+      methods: {
+        test (alias, matched, init = false) {
+          if (init && alias === 'desktop') {
+            this.desktop = 'init'
+          }
+        }
+      }
+    })
+    vm.$mount('main')
+    expect(vm).toHaveProperty('desktop', 'init')
+  })
   it('defaults to .any if no modifiers', async () => {
     const vm = new Vue({
       mq: rootOpts,

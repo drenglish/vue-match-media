@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 0.8.0 - 2017-07-02
+### Changed
+- Reverted onmedia watcher setup to bind hook (based on better understanding of lifecycle issues)
+- Execute onmedia function on bind only for matched $mq keys
+- Added an "init" boolean param when executing onmedia function from bind
+
 ## 0.7.0 - 2017-07-01
 ### Added
 - Build distributable (strip Flow annotations)
@@ -14,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - README documentation of current feature set
 ### Changed
-- Directive seems slightly more useful set up from inserted() hook
+- Directive seems slightly more useful set up from inserted hook
 - package.json cleanup
 
 ## 0.5.0 - 2017-06-30
