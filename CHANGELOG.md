@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 0.8.1 - 2017-07-03
+### Changed
+- README updates: a little more clarity about the onmedia directive, some other tinkering
+
 ## 0.8.0 - 2017-07-02
 ### Changed
 - Reverted onmedia watcher setup to bind hook (based on better understanding of lifecycle issues)
