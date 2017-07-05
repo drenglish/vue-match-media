@@ -1,0 +1,59 @@
+{
+  "name": "vue-match-media",
+  "version": "1.0.0",
+  "description": "A Vue.js plugin that offers a consistent, semantic approach to making components media query-aware.",
+  "main": "dist/index.js",
+  "engines": {
+    "node": "8",
+    "npm": ">=5"
+  },
+  "scripts": {
+    "watch": "cb watch",
+    "test": "jest",
+    "prepublish": "npm run test && npm run build",
+    "build": "babel --no-babelrc src/index.js -o dist/index.js --presets=flow"
+  },
+  "jest": {
+    "unmockedModulePathPatterns": [
+      "jasmine-expect"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drenglish/vue-match-media.git"
+  },
+  "keywords": [
+    "Vue",
+    "media-queries",
+    "match-media"
+  ],
+  "author": "Michael Dietz <mdietz@aya.yale.edu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/drenglish/vue-match-media/issues"
+  },
+  "homepage": "https://github.com/drenglish/vue-match-media#readme",
+  "peerDependencies": {
+    "vue": "^2.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-flow": "^6.23.0",
+    "crossbow": "^4.1.0",
+    "eslint": "^4.0.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-flowtype": "^2.34.0",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "flow-bin": "^0.48.0",
+    "jasmine-expect": "^3.7.0",
+    "jest": "^20.0.4",
+    "match-media-mock": "^0.1.0",
+    "vue": "^2.3.4"
+  }
+}
