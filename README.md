@@ -16,7 +16,7 @@ A plugin for Vue.js (v. 2+) that offers a consistent, semantic approach to makin
 ## Why?
 Media queries are great! Can't do responsive work without them. Try as you might, though, to keep everything you do with them inside the bounds of CSS, inevitably there's going to come a time&mdash;especially when you're working with artful/elaborate/fussy design&mdash;that last-mile pixel or DOM jiggering requires you to get dirty in client-side script. And you go ahead and do the dirty, knowing that down the road you or some other poor soul is in for a headache when some piece of layout changes and all of a sudden that last-mile formatting (long since lost to memory) gets broken.
 
-The `window.matchMedia` API is ... OK I guess? Better than the rigamarole of listening to `resize` events, and it at least feints in the direction of CSS integration. But it makes for awkward and unsemantic code (reading and writing a bunch of `(min-width: 800px)` statements isn't a lot better than a litter of `window.scrollWidth` or whatever checks) and, like `resize`, the change event is global and doesn't scope to DOM elements, meaning it's difficult to establish good predictable patterns for where and how listeners get managed.
+The `window.matchMedia` API is ... OK I guess? Better than the rigamarole of listening to `resize` events, and it at least feints in the direction of CSS integration. But it makes for awkward and unsemantic code&mdash;reading and writing a bunch of `(min-width: 800px)` statements isn't a lot better than a litter of `window.scrollWidth` or whatever checks&mdash;and, like `resize`, the change event is global and doesn't scope to DOM elements, meaning it's difficult to establish good predictable patterns for where and how listeners get managed.
 
 So when I confronted the last-mile problem again recently, in a Vue project, it seemed like a good case for a small plugin.
 
@@ -28,7 +28,7 @@ In the best case, vue-match-media (hereafter known as MQ) allows you to
   - that are implicitly provided as simple boolean reactive properties to descendant components _[no more business of calling `matchMedia` or attaching MediaQueryList listeners]_
   - and as such act as if they're scoped to whatever component uses them _[adopting Vue's patterns to give some predictability to `matchMedia` use]_
 
-The goal is to support a simpler, more repeatable process of developing well partitioned, fully layout-aware UI code. Though if you insist on making things more interesting than that, we've got at least a few edge cases covered too.
+The goal is to support a simpler, more repeatable process of developing well partitioned, layout-aware UI code. Though if you insist on making things more interesting than that, we've got at least a few edge cases covered too.
 
 ## How's it work?
 ### Use
@@ -70,7 +70,7 @@ Of course, simple show/hide on breakpoint is much more correctly handled in CSS.
       </div>
     </template>
 
-As it's often the case that life is a *lot* easier if you can just transparently re-flow the DOM to support that one special-snowflake breakpoint.
+As it's often true that life is a *lot* easier if you can just transparently re-flow the DOM to support that one special-snowflake breakpoint.
 
 #### $mq.all
 An `$mq.all` convenience property (also reactive) dumps out an array of the aliases of all of your currently matched media queries. You could, for instance, support a legacy CSS codebase that uses display-mode classes instead of proper media queries for responsive formatting:
@@ -81,13 +81,13 @@ An `$mq.all` convenience property (also reactive) dumps out an array of the alia
 
     // Rendered: <div class="phone tablet"></div>
 
-Though if you're writing a Vue app are you likely to be dealing with that? But this also gives you an easy and predictable way of providing layout hints to any component that needs them:
+Though if you're writing a Vue app are you likely to be dealing with that? But this also gives you a predictable way of providing layout hints to any component that needs them:
 
     <template>
       <my-layout-wrapper :display-mode="$mq.all"></my-layout-wrapper>
     </template>
 
-Allowing the child component to filter on the `displayMode` prop within its own lifecycle hooks to decide just what monkeying it needs to do with what pixels.
+Allowing the child component to filter on the `displayMode` prop within its own lifecycle hooks to decide just what monkeying it needs to do with what pixels. Of course the child also _inherits_ $mq, so this pattern is a little coals-to-Newcastle-ish, but there's something to be said for keeping code that directly references media queries as far as possible within a single root/parent component.
 
 #### Directive: v-onmedia
 MQ also provides an "onmedia" directive, from which you can invoke component methods whenever one of your media queries registers a change.
@@ -99,7 +99,7 @@ MQ also provides an "onmedia" directive, from which you can invoke component met
     <script>
     export default {
       methods: {
-        doSomething (alias, matches, init=false) {
+        doSomething (alias, matches, init = false) {
           if (alias === 'tablet' && matches)
           /* do something */
         }
@@ -107,11 +107,11 @@ MQ also provides an "onmedia" directive, from which you can invoke component met
     }
     </script>
 
-The callback function is given the alias of the media query that spawned the change, and its new (boolean) `matches` value. The callback will be executed on any change, and also when the directive is first bound (in that case, only if the media query is matched). An extra boolean "init" arg is provided on that first execution, so you can target/avoid it as necessary.
+The callback function is given the alias of the media query that spawned the change, and its new (boolean) `matches` value. In addition to running on change, the callback also runs when the directive is first bound (in that case, only if the media query is matched). An extra boolean "init" arg is provided on that first execution, so you can target/avoid it as necessary.
 
-**Important caveat:** The `onmedia` directive is really just syntactic sugar for setting up a watch on one or more of MQ's reactive properties. That means you probably shouldn't use it in a component that's bound to any of those properties, because recursion. Also, **don't expect a browser rendering context** or a full DOM in your callback. The media change event doesn't fire with reference to Vue lifecycle events, so you should only use your callback to change component state (and presumably trigger re-render thereby).
+**Important caveat:** The `onmedia` directive is really just syntactic sugar for setting up a watch on one or more of MQ's reactive properties. That means you probably shouldn't use it in a component that's bound to any of those properties, because recursion. Also, **don't expect a browser rendering context** or a full DOM in your callback. The media change event doesn't fire with reference to Vue lifecycle events, so you should only use your callback to update component state.
 
-The directive accepts modifiers to limit the watcher scope, if the component only cares about reacting to a subset of the available queries.
+The directive accepts modifiers to limit the watcher scope, so you can specify which media query gets which callback.
 
     v-onmedia.any= // Fires from any changed media query; default
     v-onmedia= // Equivalent to v-onmedia.any
@@ -174,7 +174,9 @@ Now the child component (and any descendant) only knows about its own $mq defini
 
 ## Other stuff
 ### Install
-From github for now; NPM publish TBD.
+From this repo, or from NPM:
+
+    npm install vue-match-media
 
 ### Compatibility warning
 MQ uses ES-native Symbols to obscure its internals. So it won't work in retrograde browsers (\*cough\*IE\*cough\*) without Symbol support. Just ponyfill with something like [es6-symbol](https://github.com/medikoo/es6-symbol).

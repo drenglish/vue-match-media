@@ -1,6 +1,6 @@
 {
   "name": "vue-match-media",
-  "version": "0.8.1",
+  "version": "1.0.0",
   "description": "A Vue.js plugin that offers a consistent, semantic approach to making components media query-aware.",
   "main": "dist/index.js",
   "engines": {
@@ -10,7 +10,8 @@
   "scripts": {
     "watch": "cb watch",
     "test": "jest",
-    "build": "babel --no-babelrc src/index.js -o dist/index.js --presets=flow"
+    "prepublish": "npm run test",
+    "prepack": "babel --no-babelrc src/index.js -o dist/index.js --presets=flow"
   },
   "jest": {
     "unmockedModulePathPatterns": [
