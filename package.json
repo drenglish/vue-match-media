@@ -1,6 +1,6 @@
 {
   "name": "vue-match-media",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Vue.js plugin that offers a consistent, semantic approach to making components media query-aware.",
   "main": "dist/index.js",
   "engines": {

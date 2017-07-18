@@ -1,0 +1,8 @@
+# Avoid creating problems upstream for Webpack users
+.babelrc
+
+# And a couple other unnecessary things
+.editorconfig
+.eslintrc.js
+crossbow.yml
+.flowconfig

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 1.0.1 - 2017-07-18
+### Fixed
+- Add .npmignore to remove .babelrc from published package
+
 ## 1.0.0 - 2017-07-05
 ### Changed
 - Version bump for release
