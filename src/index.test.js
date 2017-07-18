@@ -1,5 +1,5 @@
 import Vue from 'vue/dist/vue.js'
-import plugin, {MQ} from './index.js'
+import plugin from './index.js'
 import 'jasmine-expect'
 import matchMediaMock from 'match-media-mock'
 
@@ -93,7 +93,7 @@ describe('The plugin', () => {
     expect(vmchild.$mq).toHaveProperty('tablet', false)
     expect(vmchild.$mq).toHaveProperty('desktop', true)
 
-    expect(vmchild[MQ]._tablet).toEqual(vmchild[MQ]._phone)
+    expect(vmchild.$mq._tablet).toEqual(vmchild.$mq._phone)
   })
   it('allows a child component to declare an isolated scope', () => {
     const child = Vue.component('child', Vue.extend({

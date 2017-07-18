@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 1.0.2 - 2017-07-18
+### Changed
+- Transpile code in "dist" to ES5 (except for Symbol, which needs client ponyfill)
+- Add "module" field in package.json to indicate src/index.js as importable ES6 module
+- Remove Flow annotations (nothing was happening there anyway)
+
 ## 1.0.1 - 2017-07-18
 ### Fixed
 - Add .npmignore to remove .babelrc from published package

@@ -1,18 +1,17 @@
-// @flow
 import Vue from 'vue'
 
-export const MQ = Symbol('mq')
-const MQMAP = Symbol('mqueries')
+const MQ = 'VUE-MATCH-MEDIA-MQ'
+const MQMAP = 'VUE-MATCH-MEDIA-MQUERIES'
 
-export default (Vue: Vue, options?: Object): void => {
-  Object.defineProperty(Vue.prototype, '$mq', ({
-    get (): Object {
+export default (Vue, options) => {
+  Object.defineProperty(Vue.prototype, '$mq', {
+    get () {
       return this[MQ]
     }
-  }: Object))
+  })
 
   Vue.mixin({
-    beforeCreate (): void {
+    beforeCreate () {
       const isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated
       const isRoot = this === this.$root
       const inherited = this.$parent && this.$parent[MQMAP]
@@ -37,7 +36,7 @@ export default (Vue: Vue, options?: Object): void => {
             return obs
           }, {})
 
-        Object.defineProperty(observed, 'all', ({
+        Object.defineProperty(observed, 'all', {
           enumerable: true,
           configurable: true,
           get () {
@@ -45,7 +44,7 @@ export default (Vue: Vue, options?: Object): void => {
               .filter(k => k !== 'all')
               .filter(k => this[k])
           }
-        }: Object))
+        })
 
         Vue.util.defineReactive(this, MQ, observed)
       } else if (inherited) {
@@ -56,7 +55,7 @@ export default (Vue: Vue, options?: Object): void => {
   })
 
   Vue.directive('onmedia', {
-    bind (el?: Node, {value, expression, arg, modifiers}, {context}): void {
+    bind (el, {value, expression, arg, modifiers}, {context}) {
       const matchers = [...Object.keys(modifiers)]
       const ANY = !matchers.length || modifiers.any
       const NOT = arg

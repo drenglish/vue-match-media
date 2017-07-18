@@ -173,10 +173,9 @@ The one instance where this would seem to be useful is if you're developing a re
 Now the child component (and any descendant) only knows about its own $mq definitions.
 
 ## Other stuff
-### Install
-From this repo, or from NPM:
+### Installation and compatibility
+Vue-match media is published on NPM:
 
     npm install vue-match-media
 
-### Compatibility warning
-MQ uses ES-native Symbols to obscure its internals. So it won't work in retrograde browsers (\*cough\*IE\*cough\*) without Symbol support. Just ponyfill with something like [es6-symbol](https://github.com/medikoo/es6-symbol).
+The "main" field in package.json points to the transpiled source file in the "dist" subdirectory. If you're using ES6 imports you can reference the src/index.js file itself.

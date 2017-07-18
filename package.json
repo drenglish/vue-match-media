@@ -1,17 +1,17 @@
 {
   "name": "vue-match-media",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Vue.js plugin that offers a consistent, semantic approach to making components media query-aware.",
   "main": "dist/index.js",
+  "module": "src/index.js",
   "engines": {
     "node": "8",
     "npm": ">=5"
   },
   "scripts": {
-    "watch": "cb watch",
     "test": "jest",
     "prepublish": "npm run test && npm run build",
-    "build": "babel --no-babelrc src/index.js -o dist/index.js --presets=flow"
+    "build": "babel src/index.js -o dist/index.js"
   },
   "jest": {
     "unmockedModulePathPatterns": [
@@ -41,8 +41,6 @@
     "babel-eslint": "^7.2.3",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.5.2",
-    "babel-preset-flow": "^6.23.0",
-    "crossbow": "^4.1.0",
     "eslint": "^4.0.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-flowtype": "^2.34.0",
@@ -50,7 +48,6 @@
     "eslint-plugin-node": "^5.0.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "flow-bin": "^0.48.0",
     "jasmine-expect": "^3.7.0",
     "jest": "^20.0.4",
     "match-media-mock": "^0.1.0",
