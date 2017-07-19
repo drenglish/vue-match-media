@@ -1,3 +1,4 @@
+/* eslint no-unused-vars:0 */
 import Vue from 'vue'
 
 const MQ = 'VUE-MATCH-MEDIA-MQ'

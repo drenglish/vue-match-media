@@ -1,28 +1,25 @@
-'use strict';
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('vue')) :
+	typeof define === 'function' && define.amd ? define(['vue'], factory) :
+	(factory(global.Vue));
+}(this, (function (Vue) { 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _vue = require('vue');
-
-var _vue2 = _interopRequireDefault(_vue);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+/* eslint no-unused-vars:0 */
 var MQ = 'VUE-MATCH-MEDIA-MQ';
 var MQMAP = 'VUE-MATCH-MEDIA-MQUERIES';
 
-exports.default = function (Vue, options) {
-  Object.defineProperty(Vue.prototype, '$mq', {
+var MQ$1 = (function (Vue$$1, options) {
+  Object.defineProperty(Vue$$1.prototype, '$mq', {
     get: function get() {
       return this[MQ];
     }
   });
 
-  Vue.mixin({
+  Vue$$1.mixin({
     beforeCreate: function beforeCreate() {
       var _this = this;
 
@@ -64,15 +61,15 @@ exports.default = function (Vue, options) {
           }
         });
 
-        Vue.util.defineReactive(this, MQ, observed);
+        Vue$$1.util.defineReactive(this, MQ, observed);
       } else if (inherited) {
         this[MQMAP] = inherited;
-        Vue.util.defineReactive(this, MQ, this.$parent[MQ]);
+        Vue$$1.util.defineReactive(this, MQ, this.$parent[MQ]);
       }
     }
   });
 
-  Vue.directive('onmedia', {
+  Vue$$1.directive('onmedia', {
     bind: function bind(el, _ref, _ref2) {
       var value = _ref.value,
           expression = _ref.expression,
@@ -85,16 +82,16 @@ exports.default = function (Vue, options) {
       var NOT = arg;
 
       if (!(value instanceof Function)) {
-        Vue.util.warn('Error binding v-onmedia: expression "' + expression + '" doesn\'t resolve to\n          a component method, so there\'s nothing to call back on change', context);
+        Vue$$1.util.warn('Error binding v-onmedia: expression "' + expression + '" doesn\'t resolve to\n          a component method, so there\'s nothing to call back on change', context);
         return;
       }
       if (NOT) {
         if (ANY) {
-          Vue.util.warn('Error binding v-onmedia: a ":not" argument was passed without any modifiers', context);
+          Vue$$1.util.warn('Error binding v-onmedia: a ":not" argument was passed without any modifiers', context);
           return;
         }
         if (NOT !== 'not') {
-          Vue.util.warn('Error binding v-onmedia: unknown argument "' + arg + '" was passed', context);
+          Vue$$1.util.warn('Error binding v-onmedia: unknown argument "' + arg + '" was passed', context);
           return;
         }
       }
@@ -113,4 +110,8 @@ exports.default = function (Vue, options) {
       });
     }
   });
-};
+});
+
+Vue.use(MQ$1);
+
+})));

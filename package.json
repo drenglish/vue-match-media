@@ -11,7 +11,7 @@
   "scripts": {
     "test": "jest",
     "prepublish": "npm run test && npm run build",
-    "build": "babel src/index.js -o dist/index.js"
+    "build": "rollup -c"
   },
   "jest": {
     "unmockedModulePathPatterns": [
@@ -37,7 +37,6 @@
     "vue": "^2.3"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.5.2",
@@ -51,6 +50,9 @@
     "jasmine-expect": "^3.7.0",
     "jest": "^20.0.4",
     "match-media-mock": "^0.1.0",
+    "rollup": "^0.45.2",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-eslint": "^4.0.0",
     "vue": "^2.3.4"
   }
 }

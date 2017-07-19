@@ -6,11 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## 1.0.2 - 2017-07-18
+## 1.0.2 - 2017-07-19
 ### Changed
-- Transpile code in "dist" to ES5 (except for Symbol, which needs client ponyfill)
+- Transpile code in "dist" to ES5
 - Add "module" field in package.json to indicate src/index.js as importable ES6 module
+- Build with Rollup from entry.js
+- Remove native Symbols (it's just easier)
 - Remove Flow annotations (nothing was happening there anyway)
+- Update README for distributable code, IE compatibility
 
 ## 1.0.1 - 2017-07-18
 ### Fixed

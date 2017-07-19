@@ -1,18 +1,20 @@
 # vue-match-media
 A plugin for Vue.js (v. 2+) that offers a consistent, semantic approach to making components media query-aware.
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Why?](#why)
-- [What's it do?](#whats-it-do)
-- [How's it work?](#hows-it-work)
-	- [Use](#use)
-		- [$mq](#mq)
-		- [$mq.all](#mqall)
-		- [Directive: v-onmedia](#directive-v-onmedia)
-	- [Options](#options)
-- [Other stuff](#other-stuff)
-	- [Install](#install)
-	- [Compatibility warning](#compatibility-warning)
+- [vue-match-media](#vue-match-media)
+	- [Why?](#why)
+	- [What's it do?](#whats-it-do)
+	- [How's it work?](#hows-it-work)
+		- [Install](#install)
+		- [Use](#use)
+			- [$mq](#mq)
+			- [$mq.all](#mqall)
+			- [Directive: v-onmedia](#directive-v-onmedia)
+		- [Options](#options)
+	- [IE compatibility](#ie-compatibility)
 
+<!-- /TOC -->
 ## Why?
 Media queries are great! Can't do responsive work without them. Try as you might, though, to keep everything you do with them inside the bounds of CSS, inevitably there's going to come a time&mdash;especially when you're working with artful/elaborate/fussy design&mdash;that last-mile pixel or DOM jiggering requires you to get dirty in client-side script. And you go ahead and do the dirty, knowing that down the road you or some other poor soul is in for a headache when some piece of layout changes and all of a sudden that last-mile formatting (long since lost to memory) gets broken.
 
@@ -31,13 +33,22 @@ In the best case, vue-match-media (hereafter known as MQ) allows you to
 The goal is to support a simpler, more repeatable process of developing well partitioned, layout-aware UI code. Though if you insist on making things more interesting than that, we've got at least a few edge cases covered too.
 
 ## How's it work?
-### Use
-Basic Vue plugin setup:
+### Install
+From NPM:
 
-    import MQ from 'vue-match-media'
+    npm i vue-match-media
+
+A transpiled ES5 distributable (dist/index.js) is set as "main" in package.json. Simply require it (after Vue, of course) and MQ will install itself and be ready to configure. If you prefer using the plugin as an ES6 module, it's a single file, so you can just import from src/index.js. But you'l have to install it to Vue yourself:
+
+    import MQ from 'vue-match-media/src'
     Vue.use(MQ)
 
-Instantiate Vue with your aliased media queries in an "mq" key:
+If you're building with Rollup, package.json provides a "module" field, which will make the additional "/src" path unnecessary.
+
+**Be aware** that the transpiled distributable will NOT run as-is in IE. See [below](#ie-compatibility) for notes.
+
+### Use
+Having required or imported MQ, instantiate Vue with your aliased media queries in an "mq" key:
 
     const vm = new Vue({
       el: '#some-element',
@@ -172,10 +183,10 @@ The one instance where this would seem to be useful is if you're developing a re
 
 Now the child component (and any descendant) only knows about its own $mq definitions.
 
-## Other stuff
-### Installation and compatibility
-Vue-match media is published on NPM:
+## IE compatibility
+If you're targeting IE, I'm going to assume you've got a polyfill strategy already in place; for that reason the MQ distributable doesn't supply any. MQ relies on the presence of `Array.from` and `new Set(iterable)`, neither of which have IE support. My own practice in client code has been to polyfill piecemeal from [Core JS](https://github.com/zloirock/core-js):
 
-    npm install vue-match-media
+    import 'core-js/es6/set'
+    import 'core-js/fn/array/from'
 
-The "main" field in package.json points to the transpiled source file in the "dist" subdirectory. If you're using ES6 imports you can reference the src/index.js file itself.
+Globals need to be modified (as in the above imports) to provide these features or the code won't work.
