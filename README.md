@@ -32,6 +32,8 @@ In the best case, vue-match-media (hereafter known as MQ) allows you to
 
 The goal is to support a simpler, more repeatable process of developing well partitioned, layout-aware UI code. Though if you insist on making things more interesting than that, we've got at least a few edge cases covered too.
 
+(There's also a [very unexciting fiddle](https://jsfiddle.net/drenglish/rywfxj0a/) you can look at if you want to see some MQ features in action.)
+
 ## How's it work?
 ### Install
 From NPM:
