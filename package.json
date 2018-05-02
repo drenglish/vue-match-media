@@ -1,6 +1,6 @@
 {
   "name": "vue-match-media",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Vue.js plugin that offers a consistent, semantic approach to making components media query-aware.",
   "main": "dist/index.js",
   "module": "src/index.js",
@@ -44,6 +44,7 @@
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-flowtype": "^2.34.0",
     "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-jasmine": "^2.9.1",
     "eslint-plugin-node": "^5.0.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
