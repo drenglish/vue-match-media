@@ -37,8 +37,12 @@ describe('The plugin', () => {
         phone: '(max-width: 728px)',
         tablet: '(min-width: 728px)',
         desktop: '(min-width: 1024px)'
+      },
+      render (h) {
+        return h('div')
       }
     })
+    vm.$mount()
     expect(vm.$mq).toHaveProperty('all')
     expect(vm.$mq.all).toBeArrayOfSize(2)
     expect(vm.$mq.all).not.toEqual(expect.arrayContaining(['phone']))
