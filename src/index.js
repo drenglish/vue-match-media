@@ -13,12 +13,12 @@ export default (Vue, options) => {
 
   Vue.mixin({
     beforeCreate () { // Merge step, isomorphic
-      const isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated
+      const isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated // Optional chaining take my energy
       const isRoot = this === this.$root
 
       if (this.$options.mq) {
         // Component's MQMAP saves its own-option media query strings, for reactive setup later
-        this[MQMAP] = {...this.$options.mq}
+        this[MQMAP] = !this[MQMAP] ? {...this.$options.mq} : this[MQMAP] // GOTCHA: beforeCreate will be called twice on globally registered components, so check if MQMAP already exists
         // While the static $options.mq object is replaced with the full merged set
         this.$options.mq = !(isIsolated || isRoot) ? {...this.$parent.$options.mq, ...this.$options.mq} : this.$options.mq
       } else {
@@ -26,31 +26,44 @@ export default (Vue, options) => {
       }
     },
     beforeMount () { // Set reactivity in client-side hook
+      if (typeof window.matchMedia !== 'function') return // Only really needed for testing
+
       if (this[MQMAP]) {
+        const isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated
+
         // Component is root, or has overrides
-        const observed = {}
-        Object.keys(this.$options.mq).reduce((memo, k) => {
-          let mql = this.$parent && this.$parent[MQMAP][k]
-
-          const ownQuery = this[MQMAP] && this[MQMAP][k]
-          if (ownQuery) {
-            // Warn if there's an issue with the inheritance
-            if (this.$parent && this.$parent[MQMAP] && this.parent[MQMAP][k] && ownQuery === this.$parent[MQMAP][k].raw) { // Optional chaining take my energy
-              Vue.util.warn(`Component ${this.name} appears to be overriding the ${k} media query, but hasn't changed the actual query string. The override will have no effect.`)
-            } else {
-              mql = window.matchMedia(ownQuery)
-              Object.defineProperty(mql, 'raw', { // Seems like this really ought to be part of the spec
-                value: ownQuery,
-                enumerable: true,
-                configurable: true,
-                writable: false
-              })
+        const observed = Object.keys(this.$options.mq)
+          .filter(k => k !== 'config')
+          .reduce((memo, k) => {
+            let mql
+            if (!isIsolated) {
+              mql = this.$parent && this.$parent[MQMAP] && this.$parent[MQMAP][k]
             }
-          }
 
-          mql.addListener(e => { memo[k] = e.matches }) // Here's where we update the observed object from media-change events
-          memo[k] = mql.matches // Initial value
-        }, observed)
+            const ownQuery = this[MQMAP] && this[MQMAP][k]
+            if (ownQuery && ownQuery.raw) return memo // GOTCHA: beforeMount will be called twice on globally registered components
+
+            if (ownQuery) {
+              // Warn if there's an issue with the inheritance
+              if (mql && ownQuery === mql.raw) {
+                Vue.util.warn(`Component ${this.name} appears to be overriding the ${k} media query, but hasn't changed the actual query string. The override will have no effect.`)
+              } else {
+                mql = window.matchMedia(ownQuery)
+                Object.defineProperty(mql, 'raw', { // Seems like this really ought to be part of the spec
+                  value: ownQuery,
+                  enumerable: true,
+                  configurable: true,
+                  writable: false
+                })
+                this[MQMAP][k] = mql
+              }
+            }
+
+            mql.addListener(e => { memo[k] = e.matches }) // Here's where we update the observed object from media-change events
+            memo[k] = mql.matches // Initial value
+
+            return memo
+          }, {})
 
         // Define the synthetic "all" property
         Object.defineProperty(observed, 'all', {
@@ -64,7 +77,7 @@ export default (Vue, options) => {
         })
 
         // Won't someone think of the children? Inherit all active MediaQueryLists
-        this[MQMAP] = {...this.$parent[MQMAP], ...this[MQMAP]}
+        this[MQMAP] = this.$parent && this.$parent[MQMAP] ? {...this.$parent[MQMAP], ...this[MQMAP]} : this[MQMAP]
         Vue.util.defineReactive(this, MQ, observed)
       } else {
         this[MQMAP] = this.$parent[MQMAP]
