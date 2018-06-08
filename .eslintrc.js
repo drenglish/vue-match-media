@@ -1,12 +1,10 @@
 module.exports = {
   'extends': [
-    'standard',
-    'plugin:flowtype/recommended'
+    'standard'
   ],
   'plugins': [
     'standard',
-    'promise',
-    'flowtype'
+    'promise'
   ],
   'env': {
     'node': true,

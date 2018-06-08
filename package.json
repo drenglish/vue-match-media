@@ -1,6 +1,6 @@
 {
   "name": "vue-match-media",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A Vue.js plugin that offers a consistent, semantic approach to making components media query-aware.",
   "main": "dist/index.js",
   "module": "src/index.js",
@@ -38,22 +38,23 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-preset-env": "^1.5.2",
-    "eslint": "^4.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^4.19.1",
     "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-flowtype": "^2.34.0",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-jasmine": "^2.9.1",
-    "eslint-plugin-node": "^5.0.0",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "jasmine-expect": "^3.7.0",
+    "eslint-plugin-flowtype": "^2.49.3",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jasmine": "^2.10.1",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "jasmine-expect": "^3.8.3",
     "jest": "^20.0.4",
     "match-media-mock": "^0.1.0",
     "rollup": "^0.45.2",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-eslint": "^4.0.0",
-    "vue": "^2.3.4"
-  }
+    "vue": "^2.5.16"
+  },
+  "dependencies": {}
 }

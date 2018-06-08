@@ -6,6 +6,8 @@
 
 Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 /* eslint no-unused-vars:0 */
@@ -21,33 +23,66 @@ var MQ$1 = (function (Vue$$1, options) {
 
   Vue$$1.mixin({
     beforeCreate: function beforeCreate() {
-      var _this = this;
-
-      var isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated;
+      // Merge step, isomorphic
+      var isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated; // Optional chaining take my energy
       var isRoot = this === this.$root;
-      var inherited = this.$parent && this.$parent[MQMAP];
-      var inheritedKeys = isIsolated || isRoot || !inherited ? [] : Object.keys(inherited);
 
       if (this.$options.mq) {
-        this[MQMAP] = {};
+        // Component's MQMAP saves its own-option media query strings, for reactive setup later
+        this[MQMAP] = !this[MQMAP] ? _extends({}, this.$options.mq) : this[MQMAP]; // GOTCHA: beforeCreate will be called twice on globally registered components, so check if MQMAP already exists
+        // While the static $options.mq object is replaced with the full merged set
+        this.$options.mq = !(isIsolated || isRoot) ? _extends({}, this.$parent.$options.mq, this.$options.mq) : this.$options.mq;
+      } else {
+        this.$options.mq = _extends({}, this.$parent.$options.mq);
+      }
+    },
+    beforeMount: function beforeMount() {
+      var _this = this;
 
-        var mergedKeys = new Set(inheritedKeys.concat(Object.keys(this.$options.mq).filter(function (k) {
+      // Set reactivity in client-side hook
+      if (typeof window.matchMedia !== 'function') return; // Only really needed for testing
+
+      if (this[MQMAP]) {
+        var isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated;
+
+        // Component is root, or has overrides
+        var observed = Object.keys(this.$options.mq).filter(function (k) {
           return k !== 'config';
-        })));
+        }).reduce(function (memo, k) {
+          var mql = void 0;
+          if (!isIsolated) {
+            mql = _this.$parent && _this.$parent[MQMAP] && _this.$parent[MQMAP][k];
+          }
 
-        var observed = Array.from(mergedKeys).reduce(function (obs, k) {
-          var ownQuery = _this.$options.mq[k];
-          var mql = ownQuery ? window.matchMedia(ownQuery) : inherited[k];
+          var ownQuery = _this[MQMAP] && _this[MQMAP][k];
+          if (ownQuery && ownQuery.raw) return memo; // GOTCHA: beforeMount will be called twice on globally registered components
+
+          if (ownQuery) {
+            // Warn if there's an issue with the inheritance
+            if (mql && ownQuery === mql.raw) {
+              Vue$$1.util.warn('Component ' + _this.name + ' appears to be overriding the ' + k + ' media query, but hasn\'t changed the actual query string. The override will have no effect.');
+            } else {
+              mql = window.matchMedia(ownQuery);
+              Object.defineProperty(mql, 'raw', { // Seems like this really ought to be part of the spec
+                value: ownQuery,
+                enumerable: true,
+                configurable: true,
+                writable: false
+              });
+              _this[MQMAP][k] = mql;
+            }
+          }
+
           mql.addListener(function (e) {
-            obs[k] = e.matches;
-          });
+            memo[k] = e.matches;
+          } // Here's where we update the observed object from media-change events
+          );memo[k] = mql.matches; // Initial value
 
-          obs[k] = mql.matches;
-          _this[MQMAP][k] = mql;
-          return obs;
-        }, {});
+          return memo;
+        }, {}
 
-        Object.defineProperty(observed, 'all', {
+        // Define the synthetic "all" property
+        );Object.defineProperty(observed, 'all', {
           enumerable: true,
           configurable: true,
           get: function get() {
@@ -59,12 +94,15 @@ var MQ$1 = (function (Vue$$1, options) {
               return _this2[k];
             });
           }
-        });
+        }
 
+        // Won't someone think of the children? Inherit all active MediaQueryLists
+        );this[MQMAP] = this.$parent && this.$parent[MQMAP] ? _extends({}, this.$parent[MQMAP], this[MQMAP]) : this[MQMAP];
         Vue$$1.util.defineReactive(this, MQ, observed);
-      } else if (inherited) {
-        this[MQMAP] = inherited;
-        Vue$$1.util.defineReactive(this, MQ, this.$parent[MQ]);
+      } else {
+        this[MQMAP] = this.$parent[MQMAP];
+        Vue$$1.util.defineReactive(this, MQ, this.$parent[MQ] // We're just proxying the parent's reactive setup
+        );
       }
     }
   });
@@ -105,6 +143,7 @@ var MQ$1 = (function (Vue$$1, options) {
           value.call(context, k, newVal);
         });
         if (context[MQ][k]) {
+          // Initial value
           value.call(context, k, true, true);
         }
       });

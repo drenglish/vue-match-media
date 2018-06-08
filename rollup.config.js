@@ -22,6 +22,9 @@ export default {
           },
           modules: false
         }]
+      ],
+      'plugins': [
+        'transform-object-rest-spread'
       ]
     })
   ]
