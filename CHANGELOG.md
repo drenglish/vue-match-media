@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 1.1.0 - 2018-06-11
+### Added
+- Defer reactive setup to beforeMount hook to make VMM safe to use in universal apps (e.g., Nuxt)
+- All components are given an $options.mq object that reflects the complete set of media queries valid for them (rather than just their own declarations, if any)
+
+## 1.0.3 - 2018-05-18
+### Fixed
+- Change engine in package.json to allow Node >= 8
+
 ## 1.0.2 - 2017-07-19
 ### Changed
 - Transpile code in "dist" to ES5

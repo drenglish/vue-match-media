@@ -1,5 +1,5 @@
 # vue-match-media
-A plugin for Vue.js (v. 2+) that offers a consistent, semantic approach to making components media query-aware.
+A plugin for Vue.js (v. 2+) that offers a consistent, semantic approach to making components media query-aware. Now (v1.1) safe for use in universal (server-rendered) apps.
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [vue-match-media](#vue-match-media)
@@ -12,7 +12,8 @@ A plugin for Vue.js (v. 2+) that offers a consistent, semantic approach to makin
 			- [$mq.all](#mqall)
 			- [Directive: v-onmedia](#directive-v-onmedia)
 		- [Options](#options)
-	- [IE compatibility](#ie-compatibility)
+  - [Universal apps](#universal-apps)
+  - [IE compatibility](#ie-compatibility)
 
 <!-- /TOC -->
 ## Why?
@@ -46,8 +47,6 @@ A transpiled ES5 distributable (dist/index.js) is set as "main" in package.json.
     Vue.use(MQ)
 
 If you're building with Rollup, package.json provides a "module" field, which will make the additional "/src" path unnecessary.
-
-**Be aware** that the transpiled distributable will NOT run as-is in IE. See [below](#ie-compatibility) for notes.
 
 ### Use
 Having required or imported MQ, instantiate Vue with your aliased media queries in an "mq" key:
@@ -138,7 +137,7 @@ The directive also accepts a "not" argument, if you want to watch everything _bu
 Using `.any` and `:not` could be problematic if you've defined overlapping media queries; your callback will be invoked once for *each* matched query, which is probably not what you want. (Put it another way, you're gonna get some [hop-ons](http://arresteddevelopment.wikia.com/wiki/Stair_car).) Best to use explicit modifiers.
 
 ### Options
-_Any_ component in the chain can declare `mq` properties, not just at the root. Overriden properties will be merged into the inherited `mq` object and passed down to descendant components.
+A lot of the workflow for responsive design remains, size the viewport till things look like crap, then fix. No matter how carefully you manage your default breakpoints, there'll be cases where some significant piece of layout falls between two stools. To allow for those cases, MQ lets _any_ component in the chain declare breakpoints, not just at the root. New $mq aliases can be added, and existing aliases can be overriden (allowing your code to maintain its responsive semantics). New and overriden properties will be merged into the inherited `mq` object and passed down to descendant components.
 
     // Parent:
     new Vue({
@@ -153,13 +152,15 @@ _Any_ component in the chain can declare `mq` properties, not just at the root. 
 
     const child = new Vue({
       mq: {
-        tablet: 'other-tablet-query'
+        tablet: 'other-tablet-query',
+				laptop-sm: 'special-query'
       }
     })
-    // $mq.tablet now means 'other-tablet-query' for child and any descendants;
-    // $mq.phone still 'phone-query'
+    // $mq.tablet now means 'other-tablet-query' for child and any descendants,
+		// which also will see $mq.laptop-sm
+    // $mq.phone is still 'phone-query'
 
-The one instance where this would seem to be useful is if you're developing a reusable component that needs to manage its own responsive layout. In which case, you can use a `config` object to declare an isolated scope for the component, and break the inheritance chain:
+One instance where this would seem to be useful is if you're developing a reusable component that needs to manage its own responsive layout. In which case, you can use a `config` object to declare an isolated scope for the component, and break the inheritance chain:
 
     // Parent:
     new Vue({
@@ -185,10 +186,8 @@ The one instance where this would seem to be useful is if you're developing a re
 
 Now the child component (and any descendant) only knows about its own $mq definitions.
 
+## Universal apps
+AKA, Nuxt. With version 1.1, MQ is safe to use in a server-rendered context: since we depend on a browser API for reactive features, that setup is deferred now to the client-only `beforeMount()` lifecycle hook. On creation, any component with an MQ-aware ancestor is statically configured with options (`this.$options.mq`) that reflect the _complete_ (inherited) set of MQ-defined breakpoints, whether or not the component declares any of its own. The intention there is to allow for use of MQ breakpoint definitions to do things on the server like, e.g., generate preload tags with media attributes.
+
 ## IE compatibility
-If you're targeting IE, I'm going to assume you've got a polyfill strategy already in place; for that reason the MQ distributable doesn't supply any. MQ relies on the presence of `Array.from` and `new Set(iterable)`, neither of which have IE support. My own practice in client code has been to polyfill piecemeal from [Core JS](https://github.com/zloirock/core-js):
-
-    import 'core-js/es6/set'
-    import 'core-js/fn/array/from'
-
-Globals need to be modified (as in the above imports) to provide these features or the code won't work.
+As of version 1.1, code that required polyfills to work in IE (`Array.from` and `new Set(iterable)`) has been removed. I'm not actively testing the plugin on IE, so please open an issue if something looks hinky there.
