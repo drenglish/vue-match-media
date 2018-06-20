@@ -20,7 +20,7 @@ var MQ$1 = (function (Vue$$1, options) {
   });
 
   Vue$$1.mixin({
-    beforeCreate: function beforeCreate() {
+    beforeMount: function beforeMount() {
       var _this = this;
 
       var isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated;
