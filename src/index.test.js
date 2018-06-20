@@ -26,8 +26,10 @@ const rootOpts = {
 describe('The plugin', () => {
   it('accepts media query options on the root Vue instance', () => {
     const vm = new Vue({
-      mq: rootOpts
+      mq: rootOpts,
+      render (h) { return h() }
     })
+    vm.$mount()
     expect(vm.$mq).toHaveProperty('tablet')
     expect(vm.$mq).toHaveProperty('desktop')
   })
@@ -37,8 +39,10 @@ describe('The plugin', () => {
         phone: '(max-width: 728px)',
         tablet: '(min-width: 728px)',
         desktop: '(min-width: 1024px)'
-      }
+      },
+      render (h) { return h() }
     })
+    vm.$mount()
     expect(vm.$mq).toHaveProperty('all')
     expect(vm.$mq.all).toBeArrayOfSize(2)
     expect(vm.$mq.all).not.toEqual(expect.arrayContaining(['phone']))

@@ -12,7 +12,7 @@ export default (Vue, options) => {
   })
 
   Vue.mixin({
-    beforeCreate () {
+    beforeMount () {
       const isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated
       const isRoot = this === this.$root
       const inherited = this.$parent && this.$parent[MQMAP]
