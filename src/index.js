@@ -12,6 +12,10 @@ export default (Vue, options) => {
   })
 
   Vue.mixin({
+    beforeCreate () {
+      this[MQ] = {} // Needed to prevent SSR compilation errors
+    },
+
     beforeMount () {
       const isIsolated = this.$options.mq && this.$options.mq.config && this.$options.mq.config.isolated
       const isRoot = this === this.$root

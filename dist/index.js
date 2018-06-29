@@ -20,6 +20,9 @@ var MQ$1 = (function (Vue$$1, options) {
   });
 
   Vue$$1.mixin({
+    beforeCreate: function beforeCreate() {
+      this[MQ] = {}; // Needed to prevent SSR compilation errors
+    },
     beforeMount: function beforeMount() {
       var _this = this;
 
