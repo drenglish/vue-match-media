@@ -12,7 +12,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var MQ = 'VUE-MATCH-MEDIA-MQ';
 var MQMAP = 'VUE-MATCH-MEDIA-MQUERIES';
 
-var MQ$1 = (function (Vue$$1, options) {
+var MQ$1 = (function (Vue$$1) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
   Object.defineProperty(Vue$$1.prototype, '$mq', {
     get: function get() {
       return this[MQ];
@@ -37,13 +39,17 @@ var MQ$1 = (function (Vue$$1, options) {
 
         var observed = Array.from(mergedKeys).reduce(function (obs, k) {
           var ownQuery = _this.$options.mq[k];
-          var mql = ownQuery ? window.matchMedia(ownQuery) : inherited[k];
-          mql.addListener(function (e) {
-            obs[k] = e.matches;
-          });
-
-          obs[k] = mql.matches;
-          _this[MQMAP][k] = mql;
+          if (typeof window !== 'undefined') {
+            var mql = ownQuery ? window.matchMedia(ownQuery) : inherited[k];
+            mql.addListener(function (e) {
+              obs[k] = e.matches;
+            });
+            obs[k] = mql.matches;
+            _this[MQMAP][k] = mql;
+          } else {
+            obs[k] = options.defaultBreakpoint === ownQuery;
+            _this[MQMAP][k] = options.defaultBreakpoint;
+          }
           return obs;
         }, {});
 
