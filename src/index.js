@@ -4,7 +4,11 @@ import Vue from 'vue'
 const MQ = 'VUE-MATCH-MEDIA-MQ'
 const MQMAP = 'VUE-MATCH-MEDIA-MQUERIES'
 
-export default (Vue, options) => {
+export default (Vue, options = {}) => {
+  if (Vue.prototype.hasOwnProperty('$mq')) {
+    return
+  }
+
   Object.defineProperty(Vue.prototype, '$mq', {
     get () {
       return this[MQ]
@@ -29,11 +33,15 @@ export default (Vue, options) => {
         const observed = Array.from(mergedKeys)
           .reduce((obs, k) => {
             const ownQuery = this.$options.mq[k]
-            const mql = ownQuery ? window.matchMedia(ownQuery) : inherited[k]
-            mql.addListener(e => { obs[k] = e.matches })
-
-            obs[k] = mql.matches
-            this[MQMAP][k] = mql
+            if (typeof window !== 'undefined') {
+              const mql = ownQuery ? window.matchMedia(ownQuery) : inherited[k]
+              mql.addListener(e => { obs[k] = e.matches })
+              obs[k] = mql.matches
+              this[MQMAP][k] = mql
+            } else {
+              obs[k] = options.defaultBreakpoint === ownQuery
+              this[MQMAP][k] = options.defaultBreakpoint
+            }
             return obs
           }, {})
 
@@ -56,7 +64,7 @@ export default (Vue, options) => {
   })
 
   Vue.directive('onmedia', {
-    bind (el, {value, expression, arg, modifiers}, {context}) {
+    bind (el, { value, expression, arg, modifiers }, { context }) {
       const matchers = [...Object.keys(modifiers)]
       const ANY = !matchers.length || modifiers.any
       const NOT = arg
