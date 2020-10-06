@@ -5,6 +5,10 @@ const MQ = 'VUE-MATCH-MEDIA-MQ'
 const MQMAP = 'VUE-MATCH-MEDIA-MQUERIES'
 
 export default (Vue, options = {}) => {
+  if (Vue.prototype.hasOwnProperty('$mq')) {
+    return
+  }
+
   Object.defineProperty(Vue.prototype, '$mq', {
     get () {
       return this[MQ]
