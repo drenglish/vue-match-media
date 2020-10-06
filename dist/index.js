@@ -15,6 +15,10 @@ var MQMAP = 'VUE-MATCH-MEDIA-MQUERIES';
 var MQ$1 = (function (Vue$$1) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+  if (Vue$$1.prototype.hasOwnProperty('$mq')) {
+    return;
+  }
+
   Object.defineProperty(Vue$$1.prototype, '$mq', {
     get: function get() {
       return this[MQ];
